@@ -1,0 +1,17 @@
+{
+    "name": "lahirunirmalx/rms",
+    "description": "This is a class written to go through subreddit or user and scraper media",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "lahirunirmalx",
+            "email": "lahirunirmalx@gamil.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "rms\\": "src/"
+        }
+    },
+    "require": {}
+}
