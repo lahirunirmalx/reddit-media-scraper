@@ -13,5 +13,7 @@
             "rms\\": "src/"
         }
     },
-    "require": {}
+    "require": {
+        "ext-curl": "*"
+    }
 }

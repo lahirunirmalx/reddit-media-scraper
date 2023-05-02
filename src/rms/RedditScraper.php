@@ -6,6 +6,21 @@
 namespace rms;
 class RedditScraper{
 CONST BASE_URL = 'http://www.reddit.com';
+CONST HTTP_HEADERS = array(
+    'authority: www.reddit.com',
+    'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'accept-language: en-US,en;q=0.9',
+    'cache-control: max-age=0',
+    'sec-ch-ua: "Chromium";v="112", "Google Chrome";v="112", "Not:A-Brand";v="99"',
+    'sec-ch-ua-mobile: ?0',
+    'sec-ch-ua-platform: "Linux"',
+    'sec-fetch-dest: document',
+    'sec-fetch-mode: navigate',
+    'sec-fetch-site: none',
+    'sec-fetch-user: ?1',
+    'upgrade-insecure-requests: 1',
+    'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36'
+);
 
     /*
         function: scrape
@@ -17,7 +32,7 @@ CONST BASE_URL = 'http://www.reddit.com';
 
             $scrape_url = ($i == 0) ? $base_url : $base_url . '?after=' . $after;
 
-            $data = json_decode(file_get_contents($scrape_url), true);
+            $data = json_decode($this->processRequest($scrape_url), true);
             $after = $data['data']['after'];
 
             foreach ($data['data']['children'] as $child) {
@@ -53,6 +68,22 @@ CONST BASE_URL = 'http://www.reddit.com';
 
     }
 
+    function processRequest($url){
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_ENCODING, '');
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 0);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, self::HTTP_HEADERS);
+        $response = curl_exec($ch);
+
+        curl_close($ch);
+        return $response;
+    }
+
     /*
         function: processImgurLink
         processes imgur urls and downloads pictures to specified directory
@@ -67,8 +98,8 @@ CONST BASE_URL = 'http://www.reddit.com';
             $img = sprintf("%s%s%s%s%s", $savedir, DIRECTORY_SEPARATOR, $username, DIRECTORY_SEPARATOR,
                 $this->cleanFileName($imgname));
             // save the image locally
-            if (file_put_contents($img, file_get_contents($url))) {
-                if (file_put_contents($img, file_get_contents($url))) {
+            if (file_put_contents($img, $this->processRequest($url))) {
+                if (file_put_contents($img, $this->processRequest($url))) {
                     if ($this->isFilePNG($img)) {
                         $this->png2jpg($img, str_replace('.jpg', '.jpeg', $img), 100);
                     }
@@ -87,7 +118,7 @@ CONST BASE_URL = 'http://www.reddit.com';
                 $img = sprintf("%s%s%s%s%s", $savedir, DIRECTORY_SEPARATOR, $username, DIRECTORY_SEPARATOR,
                     $this->cleanFileName($imgname));
                 // save the image locally
-                if (file_put_contents($img, file_get_contents($url))) {
+                if (file_put_contents($img, $this->processRequest($url))) {
                     if ($this->isFilePNG($img)) {
                         $this->png2jpg($img, str_replace('.jpg', '.jpeg', $img), 100);
                     }
@@ -103,7 +134,7 @@ CONST BASE_URL = 'http://www.reddit.com';
             $this->createFolder($savedir, $username);
             $img = sprintf("%s%s%s%s%s.jpg", $savedir, DIRECTORY_SEPARATOR, $username, DIRECTORY_SEPARATOR, $imgname);
             //save the image locally
-            if (file_put_contents($img, file_get_contents($url))) {
+            if (file_put_contents($img, $this->processRequest($url))) {
                 if ($this->isFilePNG($img)) {
                     $this->png2jpg($img, str_replace('.jpg', '.jpeg', $img), 100);
                 }
@@ -220,8 +251,8 @@ CONST BASE_URL = 'http://www.reddit.com';
             $img = sprintf("%s%s%s%s%s", $savedir, DIRECTORY_SEPARATOR, $username, DIRECTORY_SEPARATOR,
                 $this->cleanFileName($imgname));
             // save the image locally
-            if (file_put_contents($img, file_get_contents($url))) {
-                if (file_put_contents($img, file_get_contents($url))) {
+            if (file_put_contents($img, $this->processRequest($url))) {
+                if (file_put_contents($img, $this->processRequest($url))) {
                     if ($this->isFilePNG($img)) {
                         $this->png2jpg($img, str_replace('.jpg', '.jpeg', $img), 100);
                     }
