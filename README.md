@@ -26,8 +26,7 @@ $reddit = new rms\RedditScraper();
 $posts = $reddit->scrapeSubReddit('EarthPorn',10);
  
 foreach ($posts as $result) {
-  echo '<img src="' . $result['image'] . '">';
-  echo '<video src="' . $result['video'] . '"></video>';
+  echo '<img src="' . $result['url'] . '">';
 }
 ..
 
