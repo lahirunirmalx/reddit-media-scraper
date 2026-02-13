@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/../../vendor/autoload.php';
+require __DIR__.'/../../src/rms/RedditScraper.php';
 
 $reddit = new rms\RedditScraper();
 
@@ -30,6 +30,7 @@ foreach($users as  $section=> $max_pages) {
 // total number of links returned, initialize counter for percentages
 $totalItems = count($data);
 $counter = 1;
+$last_completion = 0;
 
 echo "Parsing ".$totalItems." total items...\n\n";
 
@@ -37,12 +38,16 @@ echo "Parsing ".$totalItems." total items...\n\n";
 foreach($data as $item) {
 
 
-    if(strstr($item['url'],'imgur.com') && (strstr($item['url'],'.jpg') ||  strstr($item['url'],'.png') )) {
-        $reddit->processImgurLink($item['url'],$saveDir,$item['author']);
-    }else if(strstr($item['url'],'imgur.com') && strstr($item['url'],'.gifv') ) {
-        $reddit->processImgurLinkGifv($item['url'],$saveDir,$item['author']);
+    if(strstr($item['url'],'imgur.com')) {
+        if(strstr($item['url'],'.gifv')) {
+            $reddit->processImgurLinkGifv($item['url'],$saveDir,$item['author']);
+        } else {
+            $reddit->processImgurLink($item['url'],$saveDir,$item['author']);
+        }
     }else if (strstr($item['url'],'i.redd.it')){
         $reddit->processIreddit($item['url'],$saveDir,$item['author']);
+    }else if (strstr($item['url'],'redgifs.com')){
+        $reddit->processRedGiff($item['url'],$saveDir,$item['author']);
     } else{
         $reddit->processLinks($item['url'],$saveDir,$item['author']); // other links that not contain images and redgif urls will be save to links.txt
     }
